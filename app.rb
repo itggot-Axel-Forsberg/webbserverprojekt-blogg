@@ -3,6 +3,7 @@ require 'sinatra'
 require 'slim'
 require 'sqlite3'
 require 'bcrypt'
+enable :sessions
 
 get('/') do
     slim(:index)
@@ -33,14 +34,15 @@ post('/login') do
     pass = db.execute("SELECT Password FROM users WHERE Username = ?",params["Username"])
     
     if (BCrypt::Password.new(pass.first["Password"]) == params["Password"]) == true
-        redirect('/mypage')
+        session[:username] = params[:username]
+        redirect('/blog')
     else
         redirect('/error')
     end
     
 end
 
-get('/mypage') do
+get('/blog') do
     slim(:index)
 end
 
