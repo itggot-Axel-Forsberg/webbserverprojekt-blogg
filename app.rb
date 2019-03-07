@@ -31,10 +31,12 @@ end
 post('/login') do
     db = SQLite3::Database.new('db/Users.db')
     db.results_as_hash = true
-    pass = db.execute("SELECT Password FROM users WHERE Username = ?",params["Username"])
+    pass_crypt = db.execute("SELECT Password, User_Id FROM Users WHERE Username = ?",params["Username"])
     
-    if (BCrypt::Password.new(pass.first["Password"]) == params["Password"]) == true
-        session[:username] = params[:username]
+    if (BCrypt::Password.new(pass_crypt.first["Password"]) == params["Password"]) == true
+        session[:User] = params["Username"]
+        session[:id] = 
+    
         redirect('/blog')
     else
         redirect('/error')
@@ -43,8 +45,15 @@ post('/login') do
 end
 
 get('/blog') do
-    slim(:index)
+    db = SQLite3::Database.new('db/Users.db')
+    db.results_as_hash = true
+    posts = db.execute("SELECT Header, Text, Images FROM Posts where Author = ?", session[:User])
+    session[:Posts] = posts
+
+    slim(:blog)
 end
+
+
 
 get('/error') do
     slim(:error)

@@ -1,6 +1,7 @@
 main
-    -if session[:username] != nil
+    -if session[:User] != nil
         article
-            h1 
+            h1 = "#{session[:User]}'s Page"
 
+            
 
