@@ -5,6 +5,15 @@ require 'sqlite3'
 require 'bcrypt'
 enable :sessions
 
+# configure do
+#
+# end
+
+# before do
+#
+# end
+
+
 get('/') do
     slim(:index)
 end
@@ -19,7 +28,7 @@ post('/create') do
 
     hashat_password = BCrypt::Password.create(params["Password"])
 
-    db.execute("INSERT INTO users (Username, Email, Password) VALUES(?, ?, ?)", params["Username"], params["Email"], hashat_password)
+    db.execute("INSERT INTO Users Username, Email, Password VALUES(?, ?, ?)", params["Username"], params["Email"], hashat_password)
 
     redirect('/login')
 end
@@ -44,17 +53,44 @@ post('/login') do
     
 end
 
+get('/error') do
+    slim(:error)
+end
+
 get('/blog') do
     db = SQLite3::Database.new('db/Users.db')
     db.results_as_hash = true
     posts = db.execute("SELECT Header, Text, Images FROM Posts where Author = ?", session[:User])
-    session[:Posts] = posts
 
-    slim(:blog)
+    slim(:blog, locals:{blog:posts})
 end
 
-
-
-get('/error') do
-    slim(:error)
+get('/new_entry') do 
+    slim(:entry)
 end
+
+post('/new_entry') do
+    db = SQLite3::Database.new('db/Users.db')
+    db.results_as_hash = true
+
+    db.execute("INSERT INTO Posts (Header, Text, Images, Author) VALUES(?, ?, ?, ?)", params["Title"], params["Body"], params["Img"], session[:User])
+
+    redirect('/blog')
+end
+
+get('/edit') do 
+    db = SQLite3::Database.new('db/Users.db')
+    db.results_as_hash = true
+
+    db.execute("UPDATE Posts WHERE Post_Id")
+end
+
+post('/delete') do
+    db = SQLite3::Database.new('db/Users.db')
+    db.results_as_hash = true
+
+    db.execute("DELETE AT")
+end
+# get('/edit_entry') do
+# end
+
