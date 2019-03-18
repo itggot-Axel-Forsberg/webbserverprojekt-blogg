@@ -7,8 +7,9 @@ main
             -for posts in blog do 
                 h3 #{posts[0]}
                 p #{posts[1]}
-                
-                form action="/delete" method="POST"
+                a href="/edit/#{posts["Post_ID"]}" Edit
+
+                form action="/delete/#{posts["Post_ID"]}" method="POST"
                     input type="submit" value="Delete Entry"
 
             

@@ -1,0 +1,9 @@
+.edit
+    form action="/edit/#{posts["Post_ID"]}" method="POST"
+            /input name="Title" type="text" value="#{edit_post["Header"]}"
+            /input name="Body" type="text" value="#{edit_post["Text"]}"
+            /input name="Img" type="text" value="#{edit_post["Images"]}"
+            input type="submit" value="Edit_Entry"
+
+             form action="/delete/#{posts["Post_ID"]}" method="POST"
+                    input type="submit" value="Delete Entry"

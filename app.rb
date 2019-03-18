@@ -44,7 +44,6 @@ post('/login') do
     
     if (BCrypt::Password.new(pass_crypt.first["Password"]) == params["Password"]) == true
         session[:User] = params["Username"]
-        session[:id] = 
     
         redirect('/blog')
     else
@@ -60,7 +59,8 @@ end
 get('/blog') do
     db = SQLite3::Database.new('db/Users.db')
     db.results_as_hash = true
-    posts = db.execute("SELECT Header, Text, Images FROM Posts where Author = ?", session[:User])
+
+    posts = db.execute("SELECT Header, Text, Images, Post_ID FROM Posts WHERE Author = ?", session[:User])
 
     slim(:blog, locals:{blog:posts})
 end
@@ -78,19 +78,27 @@ post('/new_entry') do
     redirect('/blog')
 end
 
-get('/edit') do 
+get('/edit/:id') do 
+    db = SQLite3::Database.new('db/Users.db')
+    db.results_as_hash = true
+    byebug
+    edit_post = db.execute("SELECT Header, Text, Images, Post_ID FROM Posts WHERE Post_ID = ?", params[:id])
+    slim(:edit, locals:{blog:edit_post})
+end
+
+post('/edit/:id') do
     db = SQLite3::Database.new('db/Users.db')
     db.results_as_hash = true
 
-    db.execute("UPDATE Posts WHERE Post_Id")
+    db.execute("UPDATE Posts WHERE Post_ID = ?", params[:id])
+    redirect('/blog')
 end
 
-post('/delete') do
+post('/delete/:id') do
     db = SQLite3::Database.new('db/Users.db')
     db.results_as_hash = true
 
-    db.execute("DELETE AT")
+    db.execute("DELETE FROM Posts WHERE Post_ID = ?", params[:id])
+    redirect('/blog')
 end
-# get('/edit_entry') do
-# end
 
